@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">ECommerce App</string>
+    <string name="register">Register</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="have_an_account">Have an account?</string>
+    <string name="register_2">Register</string>
+    <string name="don_t_have_an_account">Don\'t Have an Account?</string>
+
+    <string name="first_slide">Pilih Produkmu</string>
+    <string name="second_slide">Pengiriman Cepat</string>
+    <string name="third_slide">Service Bagus</string>
+
+    <string name="first_description">Pilihlah produk yang tepat dan nikmati pengalaman belanja yang lebih menyenangkan dan terarah!</string>
+    <string name="second_description">Rasakan pengiriman barang yang cepat dengan pilihan jasa pengiriman mitra kami yang kompeten dibidangnya.</string>
+    <string name="third_description">Kami melayani dengan sepenuh hati. Anda senang, kami ikut senang.</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
