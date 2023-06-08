@@ -16,6 +16,6 @@
     <string name="first_description">Pilihlah produk yang tepat dan nikmati pengalaman belanja yang lebih menyenangkan dan terarah!</string>
     <string name="second_description">Rasakan pengiriman barang yang cepat dengan pilihan jasa pengiriman mitra kami yang kompeten dibidangnya.</string>
     <string name="third_description">Kami melayani dengan sepenuh hati. Anda senang, kami ikut senang.</string>
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

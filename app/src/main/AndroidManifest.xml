@@ -15,10 +15,13 @@
         android:theme="@style/Theme.ECommerceApp"
         tools:targetApi="31">
         <activity
-            android:name=".activities.OnBoardingActivity">
-        </activity>
+            android:name=".activities.ShowAllActivity"
+            android:exported="false" />
         <activity
-            android:name=".activities.RegisterActivity"/>
+            android:name=".activities.DetailedActivity"
+            android:exported="false" />
+        <activity android:name=".activities.OnBoardingActivity" />
+        <activity android:name=".activities.RegisterActivity" />
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true">
@@ -28,8 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.MainActivity"/>
+        <activity android:name=".activities.MainActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
