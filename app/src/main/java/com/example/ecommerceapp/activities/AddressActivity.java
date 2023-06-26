@@ -50,6 +50,7 @@ public class AddressActivity extends AppCompatActivity implements AddressAdapter
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Object obj = getIntent().getSerializableExtra("item");
+        int totalAmount = getIntent().getIntExtra("amount", 0);
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -81,20 +82,25 @@ public class AddressActivity extends AppCompatActivity implements AddressAdapter
             @Override
             public void onClick(View v) {
                 double amount = 0.0;
+                int quantity = getIntent().getIntExtra("totalQuantity", 1);
 
-                if (obj instanceof NewProductsModel) {
-                    NewProductsModel newProductsModel = (NewProductsModel) obj;
-                    amount = newProductsModel.getPrice();
-                }
+                if (totalAmount <= 0) {
+                    if (obj instanceof NewProductsModel) {
+                        NewProductsModel newProductsModel = (NewProductsModel) obj;
+                        amount = newProductsModel.getPrice() * quantity;
+                    }
 
-                if (obj instanceof PopularProductsModel) {
-                    PopularProductsModel popularProductsModel = (PopularProductsModel) obj;
-                    amount = popularProductsModel.getPrice();
-                }
+                    if (obj instanceof PopularProductsModel) {
+                        PopularProductsModel popularProductsModel = (PopularProductsModel) obj;
+                        amount = popularProductsModel.getPrice() * quantity;
+                    }
 
-                if (obj instanceof ShowAllModel) {
-                    ShowAllModel showAllModel = (ShowAllModel) obj;
-                    amount = showAllModel.getPrice();
+                    if (obj instanceof ShowAllModel) {
+                        ShowAllModel showAllModel = (ShowAllModel) obj;
+                        amount = showAllModel.getPrice() * quantity;
+                    }
+                } else {
+                    amount = totalAmount;
                 }
 
                 Intent intent = new Intent(AddressActivity.this, PaymentActivity.class);

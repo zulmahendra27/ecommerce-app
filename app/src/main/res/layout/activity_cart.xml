@@ -46,7 +46,7 @@
         tools:listitem="@layout/my_cart_item"/>
 
     <Button
-        android:id="@+id/buy_now"
+        android:id="@+id/checkout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"

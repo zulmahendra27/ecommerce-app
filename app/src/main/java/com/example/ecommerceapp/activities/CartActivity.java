@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ecommerceapp.R;
@@ -29,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartActivity extends AppCompatActivity {
-    int overAllTotalAmount;
+    int overAllTotalAmount, totalAmount;
+    Button checkoutBtn;
     TextView overAllAmount;
     Toolbar toolbar;
     RecyclerView recyclerView;
@@ -55,6 +58,8 @@ public class CartActivity extends AppCompatActivity {
 
         overAllAmount = findViewById(R.id.textView3);
         recyclerView = findViewById(R.id.cart_rec);
+        checkoutBtn = findViewById(R.id.checkout);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         cartModelList = new ArrayList<>();
         cartAdapter = new MyCartAdapter(this, cartModelList);
@@ -73,12 +78,22 @@ public class CartActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CartActivity.this, AddressActivity.class);
+                intent.putExtra("amount", totalAmount);
+                startActivity(intent);
+            }
+        });
     }
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             int totalBill = intent.getIntExtra("totalAmount", 0);
+            totalAmount = totalBill;
             overAllAmount.setText("Total Harga Rp. "+totalBill);
         }
     };

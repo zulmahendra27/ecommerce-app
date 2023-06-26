@@ -130,6 +130,7 @@ public class DetailedActivity extends AppCompatActivity {
                 if (showAllModel != null) {
                     intent.putExtra("item", showAllModel);
                 }
+                intent.putExtra("totalQuantity", totalQuantity);
                 startActivity(intent);
             }
         });
@@ -156,6 +157,8 @@ public class DetailedActivity extends AppCompatActivity {
                     } else if (showAllModel != null) {
                         totalPrice = showAllModel.getPrice() * totalQuantity;
                     }
+
+                    price.setText(String.valueOf(totalPrice));
                 }
             }
         });
@@ -166,6 +169,16 @@ public class DetailedActivity extends AppCompatActivity {
                 if (totalQuantity > 1) {
                     totalQuantity--;
                     quantity.setText(String.valueOf(totalQuantity));
+
+                    if (newProductsModel != null) {
+                        totalPrice = newProductsModel.getPrice() * totalQuantity;
+                    } else if (popularProductsModel != null) {
+                        totalPrice = popularProductsModel.getPrice() * totalQuantity;
+                    } else if (showAllModel != null) {
+                        totalPrice = showAllModel.getPrice() * totalQuantity;
+                    }
+
+                    price.setText(String.valueOf(totalPrice));
                 }
             }
         });
