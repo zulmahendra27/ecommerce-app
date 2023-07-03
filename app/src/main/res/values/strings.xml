@@ -20,4 +20,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="tambah_alamat">Tambah Alamat</string>
     <string name="lanjut_ke_pembayaran">Lanjut ke Pembayaran</string>
+    <string name="tambah_kategori">Tambah Kategori</string>
+    <string name="tambah_data">Tambah Data</string>
+    <string name="tambah_produk">Tambah Produk</string>
+    <string name="pilih_gambar">Pilih Gambar</string>
 </resources>

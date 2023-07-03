@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AdminDashboardActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/admin_dashboard_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#8ff7fd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="6dp"
+        app:cardCornerRadius="5dp"
+        app:layout_constraintTop_toBottomOf="@+id/admin_dashboard_toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/category_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="9dp"
+                    android:fontFamily="@font/amethysta"
+                    android:text="Kategori"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/category_add_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="8dp"
+                    android:fontFamily="@font/amethysta"
+                    android:text="@string/tambah_data"
+                    android:textColor="@color/pink"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/category_rec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="7dp"
+                android:layout_marginTop="6dp"
+                android:padding="5dp" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

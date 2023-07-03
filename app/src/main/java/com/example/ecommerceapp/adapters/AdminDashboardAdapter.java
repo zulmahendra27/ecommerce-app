@@ -13,16 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceapp.R;
+import com.example.ecommerceapp.activities.AdminProductActivity;
+import com.example.ecommerceapp.activities.DetailedActivity;
 import com.example.ecommerceapp.activities.ShowAllActivity;
-import com.example.ecommerceapp.models.CategoryModel;
+import com.example.ecommerceapp.models.AdminDashboardModel;
+import com.example.ecommerceapp.models.ShowAllModel;
 
 import java.util.List;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
+public class AdminDashboardAdapter extends RecyclerView.Adapter<AdminDashboardAdapter.ViewHolder> {
     private Context context;
-    private List<CategoryModel> list;
+    private List<AdminDashboardModel> list;
 
-    public CategoryAdapter(Context context, List<CategoryModel> list) {
+    public AdminDashboardAdapter(Context context, List<AdminDashboardModel> list) {
         this.context = context;
         this.list = list;
     }
@@ -30,18 +33,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.category_list, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_dashboard_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load(list.get(position).getImg_url()).into(holder.catImg);
-        holder.catName.setText(list.get(position).getName());
+    public void onBindViewHolder(@NonNull AdminDashboardAdapter.ViewHolder holder, int position) {
+        Glide.with(context).load(list.get(position).getImg_url()).into(holder.mCategoryImage);
+        holder.mCategoryName.setText(list.get(position).getName());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ShowAllActivity.class);
+                Intent intent = new Intent(context, AdminProductActivity.class);
                 intent.putExtra("type", list.get(position).getType());
                 intent.putExtra("name", list.get(position).getName());
                 context.startActivity(intent);
@@ -55,13 +58,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView catImg;
-        TextView catName;
+        private ImageView mCategoryImage;
+        private TextView mCategoryName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            catImg = itemView.findViewById(R.id.cat_img);
-            catName = itemView.findViewById(R.id.cat_name);
+
+            mCategoryImage = itemView.findViewById(R.id.admin_category_image);
+            mCategoryName = itemView.findViewById(R.id.admin_category_name);
         }
     }
+
+
 }
