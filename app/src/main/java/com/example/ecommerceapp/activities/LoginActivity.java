@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Intent intent;
 
                                     if (level.equalsIgnoreCase("admin")) {
-                                        intent = new Intent(LoginActivity.this, AdminUploadProductActivity.class);
+                                        intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
                                     } else {
                                         intent = new Intent(LoginActivity.this, MainActivity.class);
                                     }
