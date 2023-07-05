@@ -1,5 +1,7 @@
 package com.example.ecommerceapp.activities;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
@@ -8,9 +10,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,6 +36,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,6 +46,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +55,11 @@ import java.util.UUID;
 public class AdminUploadProductActivity extends AppCompatActivity implements AdminAddProductAdapter.CountOfImagesWhenRemoved, AdminAddProductAdapter.ItemClickListener {
     RecyclerView recyclerView;
     TextView textView;
-    Button pick, reset;
+    EditText productName, productDescription, productPrice;
+    Button pick, reset, add;
 
     ArrayList<Uri> uri = new ArrayList<>();
+    ArrayList<Task<Uri>> uploadTasks = new ArrayList<>();
     AdminAddProductAdapter adapter;
 
     private static final int Read_Permission = 101;
@@ -58,8 +67,9 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
 
     ActivityResultLauncher<Intent> activityResultLauncher;
 
+    StorageReference firebaseStorage = FirebaseStorage.getInstance().getReference();
+
     private Uri imageUri;
-    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +80,7 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
         recyclerView = findViewById(R.id.recyclerView_Gallery_Images);
         pick = findViewById(R.id.pick);
         reset = findViewById(R.id.reset);
+        add = findViewById(R.id.admin_upload_product_btn);
 
         adapter = new AdminAddProductAdapter(uri, getApplicationContext(), this, this);
         recyclerView.setLayoutManager(new GridLayoutManager(AdminUploadProductActivity.this, 4));
@@ -104,6 +115,13 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
                 textView.setText("Jumlah Foto: " + uri.size());
             }
         });
+
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadToFirebase();
+            }
+        });
     }
 
     @Override
@@ -113,23 +131,24 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
             if (data.getClipData() != null) {
                 int countOfImages = data.getClipData().getItemCount();
+
                 for (int i = 0; i < countOfImages; i++) {
-                    if (uri.size() < 11) {
+                    if (uri.size() < 8) {
                         imageUri = data.getClipData().getItemAt(i).getUri();
                         uri.add(imageUri);
-                        uploadToFirebase();
+//                        uploadToFirebase();
                     } else {
-                        Toast.makeText(AdminUploadProductActivity.this, "Tidak diizinkan untuk mengupload lebih dari 11 gambar", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminUploadProductActivity.this, "Tidak diizinkan untuk mengupload lebih dari 8 gambar", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 adapter.notifyDataSetChanged();
                 textView.setText("Jumlah Foto: " + uri.size());
             } else {
-                if (uri.size() < 11) {
+                if (uri.size() < 8) {
                     imageUri = data.getData();
                     uri.add(imageUri);
-                    uploadToFirebase();
+//                    uploadToFirebase();
                 } else {
                     Toast.makeText(AdminUploadProductActivity.this, "Tidak diizinkan untuk mengupload lebih dari 11 gambar", Toast.LENGTH_SHORT).show();
                 }
@@ -143,22 +162,120 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
     }
 
     private void uploadToFirebase() {
-        final String randomName = UUID.randomUUID().toString();
-        storageReference = FirebaseStorage.getInstance().getReference().child("products_images/" + randomName);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        ArrayList<String> downloadUrls = new ArrayList<>();
 
-        storageReference.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        productName = findViewById(R.id.admin_product_name);
+        productDescription = findViewById(R.id.admin_product_description);
+        productPrice = findViewById(R.id.admin_product_price);
 
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+        String type = getIntent().getStringExtra("type");
+        String categoryName = getIntent().getStringExtra("name");
 
-                    }
-                });
+        String name = productName.getText().toString();
+        String description = productDescription.getText().toString();
+        String rating = "4.5";
+        String priceText = productPrice.getText().toString();
+
+        if (name.isEmpty()) {
+            Toast.makeText(AdminUploadProductActivity.this, "Nama tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (description.isEmpty()) {
+            Toast.makeText(AdminUploadProductActivity.this, "Deskripsi tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (priceText.isEmpty()) {
+            Toast.makeText(AdminUploadProductActivity.this, "Harga tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (uri.size() == 0) {
+            Toast.makeText(AdminUploadProductActivity.this, "Silahkan upload foto terlebih dahulu", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int price = Integer.parseInt(priceText);
+
+        for (Uri uriList : uri) {
+            final String randomName = UUID.randomUUID().toString();
+            final StorageReference storageReference = firebaseStorage.child("products_images_test/" + randomName);
+            final TaskCompletionSource<Uri> taskCompletionSource = new TaskCompletionSource<>();
+
+            UploadTask uploadTask = storageReference.putFile(uriList);
+            uploadTasks.add(taskCompletionSource.getTask());
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String downloadUrl = uri.toString();
+                            downloadUrls.add(downloadUrl);
+
+                            taskCompletionSource.setResult(uri);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e("DOWNLOAD URL", "Error getting download URL: " + e.getMessage());
+                            taskCompletionSource.setException(e);
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("UPLOAD FILE", "Error uploading file: " + e.getMessage());
+                    taskCompletionSource.setException(e);
+                }
+            });
+        }
+
+        Task<Void> allUploadTask = Tasks.whenAll(uploadTasks);
+
+        allUploadTask.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("DOWNLOAD URL ALL", String.valueOf(downloadUrls));
+                // Add a new document with a generated id.
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", name);
+                data.put("type", type);
+                data.put("description", description);
+                data.put("price", price);
+                data.put("rating", rating);
+                data.put("img_url", downloadUrls);
+
+                db.collection("Products")
+                        .add(data)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Toast.makeText(AdminUploadProductActivity.this, "Produk berhasil ditambahkan", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(AdminUploadProductActivity.this, AdminProductActivity.class);
+                                intent.putExtra("name", categoryName);
+                                intent.putExtra("type", type);
+                                startActivity(intent);
+//                                            Log.d(TAG, String.valueOf(downloadUri));
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error adding document", e);
+                            }
+                        });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("UPLOAD FILE", "Error uploading files: " + e.getMessage());
+            }
+        });
     }
 
     @Override

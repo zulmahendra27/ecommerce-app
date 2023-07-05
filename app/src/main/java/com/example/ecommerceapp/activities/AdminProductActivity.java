@@ -50,7 +50,7 @@ public class AdminProductActivity extends AppCompatActivity {
         productAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminProductActivity.this, AdminAddProductActivity.class);
+                Intent intent = new Intent(AdminProductActivity.this, AdminUploadProductActivity.class);
                 intent.putExtra("name", name);
                 intent.putExtra("type", type);
                 startActivity(intent);
