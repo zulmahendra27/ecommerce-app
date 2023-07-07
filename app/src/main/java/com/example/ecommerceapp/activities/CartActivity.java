@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,6 +22,8 @@ import com.example.ecommerceapp.adapters.MyCartAdapter;
 import com.example.ecommerceapp.models.MyCartModel;
 import com.example.ecommerceapp.models.ShowAllModel;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -30,7 +33,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartActivity extends AppCompatActivity {
+public class CartActivity extends AppCompatActivity implements MyCartAdapter.OnCartItemDeleteListener {
     int overAllTotalAmount, totalAmount;
     Button checkoutBtn;
     TextView overAllAmount;
@@ -63,6 +66,7 @@ public class CartActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         cartModelList = new ArrayList<>();
         cartAdapter = new MyCartAdapter(this, cartModelList);
+        cartAdapter.setOnCartItemDeleteListener(this);
         recyclerView.setAdapter(cartAdapter);
 
         firestore.collection("AddToCart").document(auth.getCurrentUser().getUid())
@@ -72,6 +76,7 @@ public class CartActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                                 MyCartModel myCartModel = doc.toObject(MyCartModel.class);
+                                myCartModel.setDocumentId(doc.getId());
                                 cartModelList.add(myCartModel);
                                 cartAdapter.notifyDataSetChanged();
                             }
@@ -97,4 +102,35 @@ public class CartActivity extends AppCompatActivity {
             overAllAmount.setText("Total Harga Rp. "+totalBill);
         }
     };
+
+    @Override
+    public void onCartItemDelete(String documentId) {
+        firestore.collection("AddToCart")
+                .document(auth.getCurrentUser().getUid())
+                .collection("User")
+                .document(documentId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Dokumen berhasil dihapus
+                        // Hapus item dari daftar cartModelList
+                        for (int i = 0; i < cartModelList.size(); i++) {
+                            if (cartModelList.get(i).getDocumentId().equals(documentId)) {
+                                cartModelList.remove(i);
+                                break;
+                            }
+                        }
+                        // Perbarui tampilan
+                        cartAdapter.notifyDataSetChanged();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Gagal menghapus dokumen
+                        // Tambahkan tindakan yang perlu dilakukan jika penghapusan gagal
+                    }
+                });
+    }
 }

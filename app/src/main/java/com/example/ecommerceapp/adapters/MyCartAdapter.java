@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     Context context;
     List<MyCartModel> list;
     int totalAmount = 0;
+    private OnCartItemDeleteListener deleteListener;
 
     public MyCartAdapter(Context context, List<MyCartModel> list) {
         this.context = context;
@@ -46,6 +48,15 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         intent.putExtra("totalAmount", totalAmount);
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
+        holder.deleteCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (deleteListener != null) {
+                    deleteListener.onCartItemDelete(list.get(position).getDocumentId());
+                }
+            }
+        });
     }
 
     @Override
@@ -53,7 +64,12 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         return list.size();
     }
 
+    public interface OnCartItemDeleteListener {
+        void onCartItemDelete(String documentId);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView deleteCart;
         TextView name, price, date, time, totalQuantity, totalPrice;
 
         public ViewHolder(@NonNull View itemView) {
@@ -65,6 +81,12 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
             time = itemView.findViewById(R.id.current_time);
             totalQuantity = itemView.findViewById(R.id.total_quantity);
             totalPrice = itemView.findViewById(R.id.total_price);
+
+            deleteCart = itemView.findViewById(R.id.delete_cart);
         }
+    }
+
+    public void setOnCartItemDeleteListener(OnCartItemDeleteListener listener) {
+        this.deleteListener = listener;
     }
 }

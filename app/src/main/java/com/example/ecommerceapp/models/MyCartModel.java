@@ -7,17 +7,19 @@ public class MyCartModel {
     String productPrice;
     String totalQuantity;
     int totalPrice;
+    String documentId;
 
     public MyCartModel() {
     }
 
-    public MyCartModel(String currentTime, String currentDate, String productName, String productPrice, String totalQuantity, int totalPrice) {
+    public MyCartModel(String currentTime, String currentDate, String productName, String productPrice, String totalQuantity, int totalPrice, String documentId) {
         this.currentTime = currentTime;
         this.currentDate = currentDate;
         this.productName = productName;
         this.productPrice = productPrice;
         this.totalQuantity = totalQuantity;
         this.totalPrice = totalPrice;
+        this.documentId = documentId;
     }
 
     public String getCurrentTime() {
@@ -66,5 +68,13 @@ public class MyCartModel {
 
     public void setTotalPrice(int totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 }
