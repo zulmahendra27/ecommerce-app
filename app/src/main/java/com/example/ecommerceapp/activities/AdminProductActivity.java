@@ -17,15 +17,20 @@ import com.example.ecommerceapp.adapters.AdminProductAdapter;
 import com.example.ecommerceapp.adapters.ShowAllAdapter;
 import com.example.ecommerceapp.models.ShowAllModel;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class AdminProductActivity extends AppCompatActivity {
+public class AdminProductActivity extends AppCompatActivity implements AdminProductAdapter.ProductDeleteListener {
     AdminProductAdapter adminProductAdapter;
     List<ShowAllModel> showAllModelList;
 
@@ -61,7 +66,7 @@ public class AdminProductActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         showAllModelList = new ArrayList<>();
-        adminProductAdapter = new AdminProductAdapter(this, showAllModelList);
+        adminProductAdapter = new AdminProductAdapter(AdminProductActivity.this, showAllModelList, AdminProductActivity.this);
         recyclerView.setAdapter(adminProductAdapter);
 
         String title = "";
@@ -78,7 +83,7 @@ public class AdminProductActivity extends AppCompatActivity {
 
         if (type != null || !type.isEmpty()) {
             Log.d("TYPEPRODUCT", type);
-            firestore.collection("AllProducts").whereEqualTo("type", type)
+            firestore.collection("Products").whereEqualTo("type", type)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -86,6 +91,7 @@ public class AdminProductActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                                     ShowAllModel showAllModel = doc.toObject(ShowAllModel.class);
+                                    showAllModel.setId(doc.getId());
                                     showAllModelList.add(showAllModel);
                                     adminProductAdapter.notifyDataSetChanged();
                                 }
@@ -93,5 +99,58 @@ public class AdminProductActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    @Override
+    public void deleteProduct(ShowAllModel product) {
+        // Menghapus dokumen dari Firestore
+        firestore.collection("Products").document(product.getId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Menghapus file gambar dari Firebase Storage
+                        ArrayList<String> imgUrls = product.getImg_url();
+                        if (imgUrls != null && !imgUrls.isEmpty()) {
+                            AtomicInteger numDeletedImages = new AtomicInteger(0);
+                            int numImages = imgUrls.size();
+
+                            for (String imgUrl : imgUrls) {
+                                StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imgUrl);
+                                imageRef.delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                if (numDeletedImages.incrementAndGet() == numImages) {
+                                                    refreshProductList(product);
+                                                }
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                if (numDeletedImages.incrementAndGet() == numImages) {
+                                                    refreshProductList(product);
+                                                }
+                                            }
+                                        });
+                            }
+                        } else {
+                            refreshProductList(product);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Gagal menghapus dokumen
+                    }
+                });
+    }
+
+    private void refreshProductList(ShowAllModel product) {
+        // Menghapus item produk dari tampilan
+        showAllModelList.remove(product);
+        adminProductAdapter.notifyDataSetChanged();
     }
 }

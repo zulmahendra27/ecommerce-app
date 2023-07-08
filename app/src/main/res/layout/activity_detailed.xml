@@ -6,12 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".activities.DetailedActivity">
 
-    <ImageView
-        android:id="@+id/detailed_img"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/image_slider_detailed"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,7 +34,7 @@
         app:cardCornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detailed_img">
+        app:layout_constraintTop_toBottomOf="@+id/image_slider_detailed">
 
         <LinearLayout
             android:layout_width="match_parent"

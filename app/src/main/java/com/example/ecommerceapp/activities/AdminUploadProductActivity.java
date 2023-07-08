@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -89,12 +90,12 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
         pick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(AdminUploadProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                if (ContextCompat.checkSelfPermission(AdminUploadProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(AdminUploadProductActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, Read_Permission);
 
-                    return;
-                }
+//                    return;
+//                }
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
@@ -122,6 +123,21 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
                 uploadToFirebase();
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Read_Permission) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Izin diberikan, lakukan tindakan yang diperlukan
+                Log.d("PERIZINAN", "IZIN DIBERIKAN");
+            } else {
+                // Izin ditolak, tangani di sini (misalnya, tampilkan pesan kesalahan)
+                Log.d("PERIZINAN", "IZIN DITOLAK");
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, Read_Permission);
+            }
+        }
     }
 
     @Override

@@ -16,15 +16,18 @@ import com.example.ecommerceapp.R;
 import com.example.ecommerceapp.activities.DetailedActivity;
 import com.example.ecommerceapp.models.ShowAllModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapter.ViewHolder> {
     private Context context;
     private List<ShowAllModel> list;
+    private ProductDeleteListener deleteListener;
 
-    public AdminProductAdapter(Context context, List<ShowAllModel> list) {
+    public AdminProductAdapter(Context context, List<ShowAllModel> list, ProductDeleteListener deleteListener) {
         this.context = context;
         this.list = list;
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -35,18 +38,21 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
 
     @Override
     public void onBindViewHolder(@NonNull AdminProductAdapter.ViewHolder holder, int position) {
-        Glide.with(context).load(list.get(position).getImg_url()).into(holder.mItemImage);
+//        Glide.with(context).load(list.get(position).getImg_url()).into(holder.mItemImage);
+        ArrayList<String> imgUrls = list.get(position).getImg_url(); // Mengambil List URL gambar
+        if (imgUrls != null && !imgUrls.isEmpty()) {
+            String firstImageUrl = imgUrls.get(0); // Mengambil data pertama dari List img_url
+            Glide.with(context).load(firstImageUrl).into(holder.mItemImage); // Memuat gambar ke ImageView
+        }
         holder.mCost.setText("Rp. "+list.get(position).getPrice());
         holder.mName.setText(list.get(position).getName());
 
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(context, DetailedActivity.class);
-//                intent.putExtra("detailed", list.get(position));
-//                context.startActivity(intent);
-//            }
-//        });
+        holder.adminDeleteProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteListener.deleteProduct(list.get(position));
+            }
+        });
     }
 
     @Override
@@ -54,8 +60,16 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
         return list.size();
     }
 
+    public long getItemId(int position) {
+        return position; // Menggunakan posisi sebagai ID item
+    }
+
+    public interface ProductDeleteListener {
+        void deleteProduct(ShowAllModel product);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView mItemImage;
+        private ImageView mItemImage, adminDeleteProduct;
         private TextView mCost;
         private TextView mName;
 
@@ -65,6 +79,7 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
             mItemImage = itemView.findViewById(R.id.item_image);
             mCost = itemView.findViewById(R.id.item_cost);
             mName = itemView.findViewById(R.id.item_nam);
+            adminDeleteProduct = itemView.findViewById(R.id.admin_delete_product);
         }
     }
 }

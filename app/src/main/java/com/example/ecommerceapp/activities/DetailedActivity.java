@@ -3,6 +3,7 @@ package com.example.ecommerceapp.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceapp.R;
+import com.example.ecommerceapp.adapters.ImageSliderAdapter;
 import com.example.ecommerceapp.models.NewProductsModel;
 import com.example.ecommerceapp.models.PopularProductsModel;
 import com.example.ecommerceapp.models.ShowAllModel;
@@ -28,7 +30,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 public class DetailedActivity extends AppCompatActivity {
-    ImageView detailedImg;
     TextView rating, name, description, price, quantity;
     Button addToCart, buyNow;
     ImageView addItems, removeItems;
@@ -45,6 +46,9 @@ public class DetailedActivity extends AppCompatActivity {
     FirebaseAuth auth;
     private FirebaseFirestore firestore;
 
+    private ViewPager imageSlider;
+    private ImageSliderAdapter imageSliderAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +61,8 @@ public class DetailedActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
+        imageSlider = findViewById(R.id.image_slider_detailed);
+
         final Object obj = getIntent().getSerializableExtra("detailed");
 
         if (obj instanceof NewProductsModel) {
@@ -67,7 +73,6 @@ public class DetailedActivity extends AppCompatActivity {
             showAllModel = (ShowAllModel) obj;
         }
 
-        detailedImg = findViewById(R.id.detailed_img);
         quantity = findViewById(R.id.quantity);
         name = findViewById(R.id.detailed_name);
         rating = findViewById(R.id.rating);
@@ -82,7 +87,7 @@ public class DetailedActivity extends AppCompatActivity {
 
         // New Products
         if (newProductsModel != null) {
-            Glide.with(getApplicationContext()).load(newProductsModel.getImg_url()).into(detailedImg);
+//            Glide.with(getApplicationContext()).load(newProductsModel.getImg_url()).into(detailedImg);
             name.setText(newProductsModel.getName());
             rating.setText(newProductsModel.getRating());
             description.setText(newProductsModel.getDescription());
@@ -93,7 +98,7 @@ public class DetailedActivity extends AppCompatActivity {
 
         // Popular Products
         if (popularProductsModel != null) {
-            Glide.with(getApplicationContext()).load(popularProductsModel.getImg_url()).into(detailedImg);
+//            Glide.with(getApplicationContext()).load(popularProductsModel.getImg_url()).into(detailedImg);
             name.setText(popularProductsModel.getName());
             rating.setText(popularProductsModel.getRating());
             description.setText(popularProductsModel.getDescription());
@@ -104,13 +109,16 @@ public class DetailedActivity extends AppCompatActivity {
 
         // Show All Products
         if (showAllModel != null) {
-            Glide.with(getApplicationContext()).load(showAllModel.getImg_url()).into(detailedImg);
+//            Glide.with(getApplicationContext()).load(showAllModel.getImg_url()).into(detailedImg);
             name.setText(showAllModel.getName());
             rating.setText(showAllModel.getRating());
             description.setText(showAllModel.getDescription());
             price.setText(String.valueOf(showAllModel.getPrice()));
 
             totalPrice = showAllModel.getPrice() * totalQuantity;
+
+            imageSliderAdapter = new ImageSliderAdapter(showAllModel.getImg_url());
+            imageSlider.setAdapter(imageSliderAdapter);
         }
 
         // Buy Now

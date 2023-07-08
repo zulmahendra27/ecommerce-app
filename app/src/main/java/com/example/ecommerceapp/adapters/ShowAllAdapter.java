@@ -16,15 +16,18 @@ import com.example.ecommerceapp.R;
 import com.example.ecommerceapp.activities.DetailedActivity;
 import com.example.ecommerceapp.models.ShowAllModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHolder> {
     private Context context;
     private List<ShowAllModel> list;
+    private boolean isAdmin;
 
-    public ShowAllAdapter(Context context, List<ShowAllModel> list) {
+    public ShowAllAdapter(Context context, List<ShowAllModel> list, boolean isAdmin) {
         this.context = context;
         this.list = list;
+        this.isAdmin = isAdmin;
     }
 
     @NonNull
@@ -35,7 +38,12 @@ public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load(list.get(position).getImg_url()).into(holder.mItemImage);
+//        Glide.with(context).load(list.get(position).getImg_url()).into(holder.mItemImage);
+        ArrayList<String> imgUrls = list.get(position).getImg_url(); // Mengambil List URL gambar
+        if (imgUrls != null && !imgUrls.isEmpty()) {
+            String firstImageUrl = imgUrls.get(0); // Mengambil data pertama dari List img_url
+            Glide.with(context).load(firstImageUrl).into(holder.mItemImage); // Memuat gambar ke ImageView
+        }
         holder.mCost.setText("Rp. "+list.get(position).getPrice());
         holder.mName.setText(list.get(position).getName());
 
@@ -47,6 +55,12 @@ public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHold
                 context.startActivity(intent);
             }
         });
+
+        if (isAdmin) {
+            holder.adminDeleteProduct.setVisibility(View.VISIBLE);
+        } else {
+            holder.adminDeleteProduct.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -55,7 +69,7 @@ public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView mItemImage;
+        private ImageView mItemImage, adminDeleteProduct;
         private TextView mCost;
         private TextView mName;
         public ViewHolder(@NonNull View itemView) {
@@ -64,6 +78,17 @@ public class ShowAllAdapter extends RecyclerView.Adapter<ShowAllAdapter.ViewHold
             mItemImage = itemView.findViewById(R.id.item_image);
             mCost = itemView.findViewById(R.id.item_cost);
             mName = itemView.findViewById(R.id.item_nam);
+            adminDeleteProduct = itemView.findViewById(R.id.admin_delete_product);
+        }
+    }
+
+    public void setAdminMode(boolean isAdmin) {
+        if (isAdmin) {
+            // Tampilkan adminDeleteProduct
+            notifyDataSetChanged();
+        } else {
+            // Sembunyikan adminDeleteProduct
+            notifyDataSetChanged();
         }
     }
 }
