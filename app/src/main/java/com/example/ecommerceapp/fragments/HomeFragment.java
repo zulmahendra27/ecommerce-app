@@ -31,8 +31,10 @@ import com.example.ecommerceapp.models.PopularProductsModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.core.OrderBy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,8 +154,8 @@ public class HomeFragment extends Fragment {
         newProductsAdapter = new NewProductsAdapter(getContext(), newProductsModelList);
         newProductRecyclerView.setAdapter(newProductsAdapter);
 
-        db.collection("NewProduct")
-                .get()
+        db.collection("Products")
+                .limit(5).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -175,8 +177,8 @@ public class HomeFragment extends Fragment {
         popularProductsAdapter = new PopularProductsAdapter(getContext(), popularProductsModelList);
         popularRecyclerView.setAdapter(popularProductsAdapter);
 
-        db.collection("AllProducts")
-                .get()
+        db.collection("Products")
+                .orderBy("rating", Query.Direction.DESCENDING).limit(8).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {

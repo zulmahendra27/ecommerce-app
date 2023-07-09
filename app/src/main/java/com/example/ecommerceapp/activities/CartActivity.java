@@ -41,6 +41,7 @@ public class CartActivity extends AppCompatActivity implements MyCartAdapter.OnC
     RecyclerView recyclerView;
     List<MyCartModel> cartModelList;
     MyCartAdapter cartAdapter;
+    int totalBill = 0;
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
 
@@ -55,6 +56,13 @@ public class CartActivity extends AppCompatActivity implements MyCartAdapter.OnC
         toolbar = findViewById(R.id.my_cart_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mMessageReceiver, new IntentFilter("MyTotalAmount"));
@@ -97,7 +105,7 @@ public class CartActivity extends AppCompatActivity implements MyCartAdapter.OnC
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int totalBill = intent.getIntExtra("totalAmount", 0);
+            totalBill = intent.getIntExtra("totalAmount", 0);
             totalAmount = totalBill;
             overAllAmount.setText("Total Harga Rp. "+totalBill);
         }

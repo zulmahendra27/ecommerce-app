@@ -25,6 +25,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -63,6 +64,8 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
     ArrayList<Task<Uri>> uploadTasks = new ArrayList<>();
     AdminAddProductAdapter adapter;
 
+    Toolbar toolbar;
+
     private static final int Read_Permission = 101;
     private static final int PICK_IMAGE = 1;
 
@@ -77,6 +80,17 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_upload_product);
 
+        toolbar = findViewById(R.id.admin_upload_product_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         textView = findViewById(R.id.totalPhotos);
         recyclerView = findViewById(R.id.recyclerView_Gallery_Images);
         pick = findViewById(R.id.pick);
@@ -90,12 +104,12 @@ public class AdminUploadProductActivity extends AppCompatActivity implements Adm
         pick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (ContextCompat.checkSelfPermission(AdminUploadProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(AdminUploadProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(AdminUploadProductActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, Read_Permission);
 
-//                    return;
-//                }
+                    return;
+                }
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");

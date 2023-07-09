@@ -1,18 +1,19 @@
 package com.example.ecommerceapp.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class NewProductsModel implements Serializable {
     String description;
     String name;
     String rating;
     int price;
-    String img_url;
+    ArrayList<String> img_url;
 
     public NewProductsModel() {
     }
 
-    public NewProductsModel(String description, String name, String rating, int price, String img_url) {
+    public NewProductsModel(String description, String name, String rating, int price, ArrayList<String> img_url) {
         this.description = description;
         this.name = name;
         this.rating = rating;
@@ -52,11 +53,11 @@ public class NewProductsModel implements Serializable {
         this.price = price;
     }
 
-    public String getImg_url() {
+    public ArrayList<String> getImg_url() {
         return img_url;
     }
 
-    public void setImg_url(String img_url) {
+    public void setImg_url(ArrayList<String> img_url) {
         this.img_url = img_url;
     }
 }

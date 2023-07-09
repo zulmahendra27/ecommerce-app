@@ -7,6 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -38,6 +39,7 @@ public class DetailedActivity extends AppCompatActivity {
 
     int totalQuantity = 1;
     int totalPrice = 0;
+    int productPrice = 0;
 
     NewProductsModel newProductsModel = null;
     PopularProductsModel popularProductsModel = null;
@@ -57,6 +59,13 @@ public class DetailedActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.detailed_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -92,8 +101,11 @@ public class DetailedActivity extends AppCompatActivity {
             rating.setText(newProductsModel.getRating());
             description.setText(newProductsModel.getDescription());
             price.setText(String.valueOf(newProductsModel.getPrice()));
-
+            productPrice = newProductsModel.getPrice();
             totalPrice = newProductsModel.getPrice() * totalQuantity;
+
+            imageSliderAdapter = new ImageSliderAdapter(newProductsModel.getImg_url());
+            imageSlider.setAdapter(imageSliderAdapter);
         }
 
         // Popular Products
@@ -103,8 +115,11 @@ public class DetailedActivity extends AppCompatActivity {
             rating.setText(popularProductsModel.getRating());
             description.setText(popularProductsModel.getDescription());
             price.setText(String.valueOf(popularProductsModel.getPrice()));
-
+            productPrice = popularProductsModel.getPrice();
             totalPrice = popularProductsModel.getPrice() * totalQuantity;
+
+            imageSliderAdapter = new ImageSliderAdapter(popularProductsModel.getImg_url());
+            imageSlider.setAdapter(imageSliderAdapter);
         }
 
         // Show All Products
@@ -114,7 +129,7 @@ public class DetailedActivity extends AppCompatActivity {
             rating.setText(showAllModel.getRating());
             description.setText(showAllModel.getDescription());
             price.setText(String.valueOf(showAllModel.getPrice()));
-
+            productPrice = showAllModel.getPrice();
             totalPrice = showAllModel.getPrice() * totalQuantity;
 
             imageSliderAdapter = new ImageSliderAdapter(showAllModel.getImg_url());
@@ -204,8 +219,10 @@ public class DetailedActivity extends AppCompatActivity {
 
         final HashMap<String, Object> cartMap = new HashMap<>();
 
+        Log.d("PRODUCT PRICE", String.valueOf(productPrice));
+
         cartMap.put("productName", name.getText().toString());
-        cartMap.put("productPrice", price.getText().toString());
+        cartMap.put("productPrice", String.valueOf(productPrice));
         cartMap.put("currentTime", saveCurrentTime);
         cartMap.put("currentDate", saveCurrentDate);
         cartMap.put("totalQuantity", quantity.getText().toString());

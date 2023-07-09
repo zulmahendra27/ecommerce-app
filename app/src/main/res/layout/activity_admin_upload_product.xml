@@ -15,7 +15,7 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_add_product_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/admin_upload_product_toolbar" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout1"
@@ -132,7 +132,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/admin_add_product_toolbar"
+        android:id="@+id/admin_upload_product_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#8FF7FD"

@@ -49,6 +49,13 @@ public class AddressActivity extends AppCompatActivity implements AddressAdapter
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         Object obj = getIntent().getSerializableExtra("item");
         int totalAmount = getIntent().getIntExtra("amount", 0);
 

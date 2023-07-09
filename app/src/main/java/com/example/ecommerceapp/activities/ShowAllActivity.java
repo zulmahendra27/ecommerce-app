@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.ecommerceapp.R;
@@ -42,6 +43,13 @@ public class ShowAllActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.show_all_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         String type = getIntent().getStringExtra("type");
         String name = getIntent().getStringExtra("name");

@@ -43,11 +43,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         holder.totalPrice.setText(String.valueOf(list.get(position).getTotalPrice()));
         holder.totalQuantity.setText(list.get(position).getTotalQuantity());
 
-        totalAmount = totalAmount + list.get(position).getTotalPrice();
-        Intent intent = new Intent("MyTotalAmount");
-        intent.putExtra("totalAmount", totalAmount);
-
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+//        totalAmount = totalAmount + list.get(position).getTotalPrice();
+//        Intent intent = new Intent("MyTotalAmount");
+//        intent.putExtra("totalAmount", totalAmount);
+//
+//        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
         holder.deleteCart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +57,16 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                 }
             }
         });
+
+        // Hitung totalBill
+        int totalBill = 0;
+        for (MyCartModel cartModel : list) {
+            totalBill += cartModel.getTotalPrice();
+        }
+        // Kirim siaran lokal dengan totalBill terbaru
+        Intent intent = new Intent("MyTotalAmount");
+        intent.putExtra("totalAmount", totalBill);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     @Override

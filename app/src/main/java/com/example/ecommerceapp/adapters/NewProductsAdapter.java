@@ -16,6 +16,7 @@ import com.example.ecommerceapp.R;
 import com.example.ecommerceapp.activities.DetailedActivity;
 import com.example.ecommerceapp.models.NewProductsModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NewProductsAdapter extends RecyclerView.Adapter<NewProductsAdapter.ViewHolder> {
@@ -35,7 +36,12 @@ public class NewProductsAdapter extends RecyclerView.Adapter<NewProductsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull NewProductsAdapter.ViewHolder holder, int position) {
-        Glide.with(context).load(list.get(position).getImg_url()).into(holder.newImg);
+//        Glide.with(context).load(list.get(position).getImg_url()).into(holder.newImg);
+        ArrayList<String> imgUrls = list.get(position).getImg_url(); // Mengambil List URL gambar
+        if (imgUrls != null && !imgUrls.isEmpty()) {
+            String firstImageUrl = imgUrls.get(0); // Mengambil data pertama dari List img_url
+            Glide.with(context).load(firstImageUrl).into(holder.newImg); // Memuat gambar ke ImageView
+        }
         holder.newName.setText(list.get(position).getName());
         holder.newPrice.setText(String.valueOf(list.get(position).getPrice()));
 
